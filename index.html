@@ -949,7 +949,14 @@
             addLogLine("Pantalla 6: Clic en Confirmar por WhatsApp.");
             const phoneNumber = "+51943774008"; // 
             const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Salida+con+Wuius&dates=20260312T000000Z/20260312T010000Z&details=Chisme+y+salida`;
-            const msg = `¡Hola Wuius! Confirmo nuestra salida para el 12/03 a las ${appData.hora}. El motivo es chismear y tomaremos ${appData.bebida}. ¡Nos vemos!\n\nTambién te dejo el link para que lo agregues a tu calendario:\n${gcalUrl}`;
+            
+            let drinkText = "";
+            if (appData.bebida !== 'Solo chisme puro, cero alcohol') {
+                drinkText = ` y tomaremos ${appData.bebida}`;
+            }
+
+            const msg = `¡Hola Wuius! Confirmo nuestra salida para el 12/03 a las ${appData.hora}. El motivo es chismear${drinkText}. ¡Nos vemos!\n\nTambién te dejo el link para que lo agregues a tu calendario:\n${gcalUrl}`;
+            
             const encodedMsg = encodeURIComponent(msg);
             const url = `https://wa.me/${phoneNumber}?text=${encodedMsg}`;
             window.open(url, '_blank');
