@@ -784,7 +784,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             const audio = document.getElementById('bg-audio');
             if (audio) {
-                audio.volume = 0.08; // Aún más bajo
+                audio.volume = 0.03; // Aún más bajo
                 setTimeout(() => {
                     // Nota: En muchos navegadores moil, esto puede requerir interacción previa del usuario.
                     audio.play().catch(e => console.log('Autoplay prevent: Esperando interacción.'));
