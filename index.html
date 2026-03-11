@@ -20,6 +20,8 @@
             color: #fff;
             overflow: hidden;
             height: 100vh;
+            height: 100dvh;
+            /* Dynamic viewport for mobile toolbars */
             width: 100vw;
             -webkit-tap-highlight-color: transparent;
         }
@@ -142,7 +144,7 @@
             width: 100%;
             text-align: center;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            max-height: 88vh;
+            max-height: 85dvh;
             overflow-y: auto;
         }
 
@@ -537,10 +539,7 @@
 
 <body>
 
-    <!-- Audio del Himno (Reemplaza la ruta si tienes el archivo local, aquí uso uno genérico) -->
-    <audio id="bg-audio"
-        src="https://www.televisiontunes.com/uploads/audio/Real%20Madrid%20-%20Hala%20Madrid%20y%20Nada%20Mas.mp3"
-        preload="auto"></audio>
+    <audio id="bg-audio" src="audio/himno.mp3" preload="auto"></audio>
 
     <div class="background-orbs">
         <div class="orb orb-1"></div>
@@ -600,8 +599,10 @@
                     de tu trabajo, obvio) para mañana, <strong>12/03/2026</strong> (teniendo en cuenta que el 13/03/2026
                     es tu día libre)?</p>
                 <div class="buttons">
-                    <button class="btn btn-primary" onclick="goToScreen(4)">Sí</button>
-                    <button class="btn btn-secondary" onclick="goToScreen(3)">No</button>
+                    <button class="btn btn-primary"
+                        onclick="addLogLine('Pantalla 2: Respondió Sí a la disponibilidad.'); goToScreen(4);">Sí</button>
+                    <button class="btn btn-secondary"
+                        onclick="addLogLine('Pantalla 2: Respondió No a la disponibilidad (Tragedia).'); goToScreen(3);">No</button>
                 </div>
             </div>
         </div>
@@ -612,9 +613,8 @@
                 <h1>Qué tragedia...</h1>
                 <p>Entiendo, no hay problema... Supongo que tendré que lidiar con mi crisis futbolística y guardarme
                     todos los chismes de alta calidad para mí solo. Es una tragedia, pero sobreviviré...</p>
-                <p>O bueno, tal vez puedas hacer un pequeño esfuerzo. ¿Qué dices?</p>
                 <div class="buttons">
-                    <button class="btn btn-primary" onclick="goToScreen(4)">Bueno, está bien, sí puedo</button>
+                    <button class="btn btn-secondary" onclick="closeApp()">Cerrar</button>
                 </div>
             </div>
         </div>
@@ -635,9 +635,9 @@
                             <option value="05">05</option>
                             <option value="06">06</option>
                             <option value="07">07</option>
-                            <option value="08" selected>08</option>
+                            <option value="08">08</option>
                             <option value="09">09</option>
-                            <option value="10">10</option>
+                            <option value="10" selected>10</option>
                             <option value="11">11</option>
                             <option value="12">12</option>
                         </select>
@@ -743,6 +743,32 @@
             bebida: ''
         };
 
+        // Registro de acciones para el historial
+        let sessionLog = [];
+
+        function addLogLine(action) {
+            const time = new Date().toLocaleTimeString('es-ES');
+            sessionLog.push(`[${time}] ${action}`);
+        }
+
+        function saveSessionLog() {
+            addLogLine("--- Fin de la sesión ---");
+            const logContent = sessionLog.join('\n');
+            const webhookUrl = "https://formspree.io/f/xgonklwr";
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    Asunto: "Nuevo tracking de invitación",
+                    Historial: logContent
+                })
+            }).catch(error => console.log("Log error silenciado."));
+        }
+
         // --- Navegación General ---
         function goToScreen(screenNumber) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -753,11 +779,27 @@
         }
 
         // --- Inicio y Audio ---
-        function startFlow() {
+        // Reproducir audio automáticamente al cargar si el navegador lo permite
+        // Retrasamos unos segundos para que coincida con el final del primer párrafo
+        window.addEventListener('DOMContentLoaded', () => {
             const audio = document.getElementById('bg-audio');
-            // Configuramos volumen bajito (0.2 como solicitaste)
-            audio.volume = 0.2;
-            audio.play().catch(e => console.log('Autoplay bloqueado (normal en algunos navegadores):', e));
+            if (audio) {
+                audio.volume = 0.08; // Aún más bajo
+                setTimeout(() => {
+                    // Nota: En muchos navegadores moil, esto puede requerir interacción previa del usuario.
+                    audio.play().catch(e => console.log('Autoplay prevent: Esperando interacción.'));
+                }, 3000); // 3 segundos de retraso (después de terminar de leer el primer párrafo)
+            }
+        });
+
+        // Evento fallback en caso de que el autoplay fuera bloqueado hasta pulsar "Siguiente"
+        function startFlow() {
+            addLogLine("Pantalla 1: Inició el flujo leyendo el contexto del Real Madrid.");
+            const audio = document.getElementById('bg-audio');
+            if (audio && audio.paused) {
+                audio.volume = 0.08;
+                audio.play().catch(e => console.log('Autoplay bloqueado:', e));
+            }
             goToScreen(2);
         }
 
@@ -768,11 +810,13 @@
             const ampm = document.getElementById('time-ampm').value;
 
             appData.hora = `${h}:${m} ${ampm}`;
+            addLogLine(`Pantalla 4: Ingresó la hora (${appData.hora}).`);
             goToScreen(5);
         }
 
         // --- Modal ---
         function openModal() {
+            addLogLine("Pantalla 5: Abrió el video de evidencia.");
             document.getElementById('reel-modal').classList.add('active');
             const video = document.getElementById('evidencia-video');
             if (video) video.play().catch(e => console.log('Autoplay modal prevent: ', e));
@@ -794,9 +838,11 @@
             questions.classList.add('hidden');
 
             if (wantsAlcohol) {
+                addLogLine("Pantalla 5: Indicó que SÍ quiere alcohol.");
                 drinkOptions.classList.add('active');
                 noDrinkMsg.classList.add('hidden');
             } else {
+                addLogLine("Pantalla 5: Indicó que NO quiere alcohol (solo chisme).");
                 drinkOptions.classList.remove('active');
                 noDrinkMsg.classList.remove('hidden');
                 appData.bebida = 'Solo chisme puro, cero alcohol';
@@ -841,11 +887,66 @@
             document.getElementById('sum-hora').innerText = appData.hora;
             document.getElementById('sum-bebida').innerText = appData.bebida;
 
+            addLogLine(`Pantalla 5: Confirmó bebida seleccionada: ${appData.bebida}.`);
+            saveSessionLog(); // Guardar log cuando confirma la cita
             goToScreen(6);
+        }
+
+        // --- Cierre Triste ---
+        function closeApp() {
+            const app = document.getElementById('app');
+            app.style.transition = 'opacity 1.5s ease-in-out, transform 1.5s ease-in-out';
+            app.style.opacity = '0';
+            app.style.transform = 'scale(0.9)';
+
+            // Fade out the audio
+            const audio = document.getElementById('bg-audio');
+            if (audio) {
+                let vol = audio.volume;
+                const fadeOut = setInterval(() => {
+                    if (vol > 0.05) {
+                        vol -= 0.05;
+                        audio.volume = vol;
+                    } else {
+                        clearInterval(fadeOut);
+                        audio.pause();
+                    }
+                }, 200);
+            }
+
+            setTimeout(() => {
+                app.style.display = 'none';
+
+                // Mostrar mensaje final
+                const body = document.querySelector('body');
+                const closingMsg = document.createElement('div');
+                closingMsg.style.position = 'fixed';
+                closingMsg.style.top = '50%';
+                closingMsg.style.left = '50%';
+                closingMsg.style.transform = 'translate(-50%, -50%)';
+                closingMsg.style.textAlign = 'center';
+                closingMsg.style.width = '100%';
+                closingMsg.style.padding = '20px';
+                closingMsg.innerHTML = `
+                    <video id="fin-video" src="video/fin.mp4" playsinline loop style="width: 100%; max-width: 350px; border-radius: 12px; margin-bottom: 20px; opacity: 0; animation: fadeInUp 1s forwards; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); background: #000;"></video>
+                `;
+                body.appendChild(closingMsg);
+
+                // Configurar el video de cierre
+                const finVideo = document.getElementById('fin-video');
+                if (finVideo) {
+                    finVideo.volume = 0.5; // Volumen medio
+                    finVideo.play().catch(e => console.log('Autoplay prevent: ', e));
+                }
+
+                addLogLine("Pantalla 3: Acción cerrada con Tragedia consumada.");
+                saveSessionLog(); // Descargar el log de fallo
+            }, 1000);
         }
 
         // --- Integraciones Finales ---
         function confirmWhatsapp() {
+            addLogLine("Pantalla 6: Clic en Confirmar por WhatsApp.");
             const phoneNumber = "+51943774008"; // 
             const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Salida+con+Wuius&dates=20260312T000000Z/20260312T010000Z&details=Chisme+y+salida`;
             const msg = `¡Hola Wuius! Confirmo nuestra salida para el 12/03 a las ${appData.hora}. El motivo es chismear y tomaremos ${appData.bebida}. ¡Nos vemos!\n\nTambién te dejo el link para que lo agregues a tu calendario:\n${gcalUrl}`;
