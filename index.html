@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Una invitación especial...</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #0f0c29;
+            background: linear-gradient(to bottom, #1a1a2e, #16213e, #0f3460);
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Ambient Glow */
+        .background-orbs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+        }
+
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: #764ba2;
+            top: -50px;
+            left: -50px;
+            animation: float1 10s infinite ease-in-out alternate;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: #667eea;
+            bottom: -100px;
+            right: -100px;
+            animation: float2 12s infinite ease-in-out alternate;
+        }
+
+        .orb-3 {
+            width: 250px;
+            height: 250px;
+            background: #43e97b;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.2;
+            animation: float3 14s infinite ease-in-out alternate;
+        }
+
+        @keyframes float1 {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(30px, -50px);
+            }
+        }
+
+        @keyframes float2 {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(-40px, 30px);
+            }
+        }
+
+        @keyframes float3 {
+            0% {
+                transform: translate(-50%, -50%);
+            }
+
+            100% {
+                transform: translate(-60%, -40%);
+            }
+        }
+
+        #app {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease-in-out, transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(0.95);
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+            z-index: 10;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 35px 25px;
+            max-width: 460px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            max-height: 88vh;
+            overflow-y: auto;
+        }
+
+        /* Scrollbar para la card en móviles */
+        .card::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .card::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .card::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            color: #e2e8f0;
+            font-weight: 400;
+        }
+
+        /* Utilidades de animación (Efecto cascada) */
+        .fade-line {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s forwards;
+            text-align: justify;
+            margin-bottom: 18px;
+            font-size: 1.05rem;
+        }
+
+        .fade-line:last-of-type {
+            margin-bottom: 30px;
+        }
+
+        .delay-1 {
+            animation-delay: 0.5s;
+        }
+
+        .delay-2 {
+            animation-delay: 2.0s;
+        }
+
+        .delay-3 {
+            animation-delay: 4.5s;
+        }
+
+        .delay-4 {
+            animation-delay: 7.0s;
+        }
+
+        .delay-btn {
+            animation-delay: 9.0s;
+            opacity: 0;
+            animation: fadeInBtn 0.8s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInBtn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .btn {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            padding: 16px 32px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            outline: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-secondary:active,
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .btn-inline {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 30px;
+            margin-bottom: 25px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-inline:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .btn-gcal {
+            background: linear-gradient(135deg, #4285F4 0%, #3367D6 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
+        }
+
+        /* Inputs y Selects */
+        .input-group {
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        input[type="time"],
+        input[type="text"],
+        .custom-select {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            padding: 15px 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            outline: none;
+            text-align: center;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .custom-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            padding: 15px 10px;
+            cursor: pointer;
+        }
+
+        .custom-select option {
+            background: #1e1b4b;
+            color: #fff;
+        }
+
+        .time-picker-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .time-picker-separator {
+            font-size: 2rem;
+            color: white;
+            font-weight: 600;
+        }
+
+        input[type="text"] {
+            font-size: 1.1rem;
+            text-align: left;
+        }
+
+        input[type="time"]:focus,
+        input[type="text"]:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.4), inset 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="time"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        /* Bebidas Section */
+        .drink-section {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+            text-align: left;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            animation: fadeInBtn 0.4s ease;
+        }
+
+        .drink-section.active {
+            display: flex;
+        }
+
+        .drink-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: #cbd5e1;
+        }
+
+        .drink-option input[type="radio"] {
+            width: 22px;
+            height: 22px;
+            accent-color: #667eea;
+            cursor: pointer;
+        }
+
+        #otro-drink {
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Modal Video */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: #1e1b4b;
+            padding: 25px 20px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-content video {
+            width: 100%;
+            height: 350px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            background: #000;
+            object-fit: cover;
+        }
+
+        .modal-content i {
+            display: block;
+            margin-bottom: 25px;
+            color: #a8c0ff;
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        .close-modal {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* Summary Box */
+        .summary-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px 20px;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        .summary-box ul {
+            list-style: none;
+        }
+
+        .summary-box li {
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+            color: #f8fafc;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.4;
+        }
+
+        .summary-box li:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-box b {
+            color: #a8c0ff;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-8px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(8px);
+            }
+        }
+
+        /* Utilidades para ocultar */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Audio del Himno (Reemplaza la ruta si tienes el archivo local, aquí uso uno genérico) -->
+    <audio id="bg-audio"
+        src="https://www.televisiontunes.com/uploads/audio/Real%20Madrid%20-%20Hala%20Madrid%20y%20Nada%20Mas.mp3"
+        preload="auto"></audio>
+
+    <div class="background-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <!-- Modal del Reel -->
+    <div class="modal-overlay" id="reel-modal">
+        <div class="modal-content">
+            <!-- Video de Evidencia -->
+            <video id="evidencia-video" controls playsinline preload="metadata">
+                <source src="video/reel.mp4" type="video/mp4">
+                Tu navegador no soporta la etiqueta de video.
+            </video>
+            <label>Tu respuesta:</label>
+            <i>"Cuándo?? Go go gooooo"</i>
+            <button class="close-modal" onclick="closeModal()">Cerrar evidencia</button>
+        </div>
+    </div>
+
+    <div id="app">
+
+        <!-- Pantalla 1: Introducción Dramática -->
+        <div class="screen active" id="screen-1">
+            <div class="card">
+                <h1>El Contexto</h1>
+                <p class="fade-line delay-1">Seguramente te estás preguntando por qué te he mandado una página web de la
+                    nada. Te lo explico: hoy no es un día cualquiera. Hoy juega el Real Madrid. Aún no he olvidado que
+                    pensaste que era del Barça, pero no es momento de resentirme ahora; eso se lo dejaré al Wuius del
+                    futuro.</p>
+                <p class="fade-line delay-2">Quiero que entiendas la gravedad del asunto. Mi absoluta y total
+                    estabilidad emocional, mi buen humor y, sobre todo, mi capacidad para procesar y soltar chisme de
+                    alta calidad en los próximos días, penden de un hilo. Todo depende de 11 tipos corriendo detrás de
+                    un balón.</p>
+                <p class="fade-line delay-3">Si el Madrid gana, me convierto en un ser de luz, eufórico y con ganas de
+                    hablar hasta por los codos. Si pierde... me hundiré en la miseria absoluta y necesitaré quejarme de
+                    la vida (y del árbitro) durante horas.</p>
+                <p class="fade-line delay-4">Es exactamente por este estado de vulnerabilidad extrema, y antes de que
+                    los nervios previos al partido me consuman por completo, que he creado todo esto hoy. Mi estado de
+                    ánimo ya está en manos del equipo, pero lo que viene en la siguiente pantalla... bueno, eso te toca
+                    descubrirlo a ti.</p>
+
+                <div class="buttons delay-btn">
+                    <button class="btn btn-primary" onclick="startFlow()">Siguiente</button>
+                    <p style="font-size: 0.85rem; margin-top: 10px; margin-bottom: 0; opacity: 0.7;">(Bajo tu propio
+                        riesgo)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pantalla 2: Disponibilidad -->
+        <div class="screen" id="screen-2">
+            <div class="card">
+                <h1>Disponibilidad</h1>
+                <p>Tengo una pregunta importante para ti...<br><br>¿Cuentas con disponibilidad horaria nocturna (luego
+                    de tu trabajo, obvio) para mañana, <strong>12/03/2026</strong> (teniendo en cuenta que el 13/03/2026
+                    es tu día libre)?</p>
+                <div class="buttons">
+                    <button class="btn btn-primary" onclick="goToScreen(4)">Sí</button>
+                    <button class="btn btn-secondary" onclick="goToScreen(3)">No</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pantalla 3: El "No" dramático -->
+        <div class="screen" id="screen-3">
+            <div class="card">
+                <h1>Qué tragedia...</h1>
+                <p>Entiendo, no hay problema... Supongo que tendré que lidiar con mi crisis futbolística y guardarme
+                    todos los chismes de alta calidad para mí solo. Es una tragedia, pero sobreviviré...</p>
+                <p>O bueno, tal vez puedas hacer un pequeño esfuerzo. ¿Qué dices?</p>
+                <div class="buttons">
+                    <button class="btn btn-primary" onclick="goToScreen(4)">Bueno, está bien, sí puedo</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pantalla 4: La Hora -->
+        <div class="screen" id="screen-4">
+            <div class="card">
+                <h1>¡Perfecto!</h1>
+                <p>El día 12/03/2026 ya está reservado. Solo falta un pequeño detalle...<br><br>¿A qué hora paso por ti
+                    / nos encontramos?</p>
+                <div class="input-group">
+                    <div class="time-picker-container">
+                        <select id="time-hour" class="custom-select">
+                            <option value="01">01</option>
+                            <option value="02">02</option>
+                            <option value="03">03</option>
+                            <option value="04">04</option>
+                            <option value="05">05</option>
+                            <option value="06">06</option>
+                            <option value="07">07</option>
+                            <option value="08" selected>08</option>
+                            <option value="09">09</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                        </select>
+                        <span class="time-picker-separator">:</span>
+                        <select id="time-minute" class="custom-select">
+                            <option value="00">00</option>
+                            <option value="15">15</option>
+                            <option value="30" selected>30</option>
+                            <option value="45">45</option>
+                        </select>
+                        <select id="time-ampm" class="custom-select">
+                            <option value="PM" selected>PM</option>
+                            <option value="AM">AM</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button class="btn btn-primary" onclick="saveTimeAndContinue()">Confirmar hora</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pantalla 5: Las Bebidas y el Reel -->
+        <div class="screen" id="screen-5">
+            <div class="card">
+                <h1>Cuestión de supervivencia</h1>
+                <p>¿Podemos ingerir bebidas alcohólicas mientras reniego o chismeamos? Recuerda el otro día que te envié
+                    un reel...</p>
+
+                <button class="btn-inline" onclick="openModal()">Ver evidencia 🎥</button>
+
+                <p><strong>¿Entonces, habrá alcohol?</strong></p>
+
+                <div class="buttons" id="alcohol-questions">
+                    <button class="btn btn-primary" onclick="handleDrinks(true)">Sí, obvio</button>
+                    <button class="btn btn-secondary" onclick="handleDrinks(false)">No, paso</button>
+                </div>
+
+                <!-- Opciones de bebidas (ocultas por defecto) -->
+                <div class="drink-section" id="drink-options">
+                    <label class="drink-option">
+                        <input type="radio" name="drink" value="Vino"> Vino 🍷
+                    </label>
+                    <label class="drink-option">
+                        <input type="radio" name="drink" value="Corona"> Corona 🍺
+                    </label>
+                    <label class="drink-option">
+                        <input type="radio" name="drink" value="Stella Artois"> Stella Artois 🍻
+                    </label>
+                    <label class="drink-option">
+                        <input type="radio" name="drink" value="Otro"> Otro personal
+                    </label>
+                    <input type="text" id="otro-drink" class="drink-input-text"
+                        placeholder="Escribe tu trago preferido...">
+                </div>
+
+                <p id="no-drink-msg" class="hidden" style="margin-top: 20px; color: #43e97b;">No hay problema, solo será
+                    charla y buen chisme. ✨</p>
+
+                <div class="buttons hidden" id="btn-next-step5" style="margin-top: 25px;">
+                    <button class="btn btn-primary" onclick="processDrinkSelection()">Siguiente</button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Pantalla 6: Resumen y Confirmación -->
+        <div class="screen" id="screen-6">
+            <div class="card">
+                <h1>¡Cita agendada con éxito!</h1>
+                <p>Aquí tienes los detalles oficiales de nuestra trascendental reunión:</p>
+
+                <div class="summary-box">
+                    <ul>
+                        <li><span>📅</span>
+                            <div><b>Fecha:</b> 12/03/2026</div>
+                        </li>
+                        <li><span>⏰</span>
+                            <div><b>Hora:</b> <span id="sum-hora"></span></div>
+                        </li>
+                        <li><span>🗣</span>
+                            <div><b>Motivo:</b> Chismear en altas cantidades y lidiar con las consecuencias del partido
+                                del Real Madrid.</div>
+                        </li>
+                        <li><span>🍻</span>
+                            <div><b>Bebestibles:</b> <span id="sum-bebida"></span></div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="buttons">
+                    <button class="btn btn-whatsapp" onclick="confirmWhatsapp()">Confirmar por WhatsApp</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Variables globales para guardar la data
+        let appData = {
+            hora: '',
+            bebida: ''
+        };
+
+        // --- Navegación General ---
+        function goToScreen(screenNumber) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            setTimeout(() => {
+                const target = document.getElementById(`screen-${screenNumber}`);
+                if (target) target.classList.add('active');
+            }, 50);
+        }
+
+        // --- Inicio y Audio ---
+        function startFlow() {
+            const audio = document.getElementById('bg-audio');
+            // Configuramos volumen bajito (0.2 como solicitaste)
+            audio.volume = 0.2;
+            audio.play().catch(e => console.log('Autoplay bloqueado (normal en algunos navegadores):', e));
+            goToScreen(2);
+        }
+
+        // --- Manejo de la Hora ---
+        function saveTimeAndContinue() {
+            const h = document.getElementById('time-hour').value;
+            const m = document.getElementById('time-minute').value;
+            const ampm = document.getElementById('time-ampm').value;
+
+            appData.hora = `${h}:${m} ${ampm}`;
+            goToScreen(5);
+        }
+
+        // --- Modal ---
+        function openModal() {
+            document.getElementById('reel-modal').classList.add('active');
+            const video = document.getElementById('evidencia-video');
+            if (video) video.play().catch(e => console.log('Autoplay modal prevent: ', e));
+        }
+        function closeModal() {
+            document.getElementById('reel-modal').classList.remove('active');
+            const video = document.getElementById('evidencia-video');
+            if (video) video.pause();
+        }
+
+        // --- Bebidas y Lógica ---
+        function handleDrinks(wantsAlcohol) {
+            const drinkOptions = document.getElementById('drink-options');
+            const noDrinkMsg = document.getElementById('no-drink-msg');
+            const btnNext = document.getElementById('btn-next-step5');
+            const questions = document.getElementById('alcohol-questions');
+
+            // Ocultamos las preguntas iniciales para dejar espacio a la selección
+            questions.classList.add('hidden');
+
+            if (wantsAlcohol) {
+                drinkOptions.classList.add('active');
+                noDrinkMsg.classList.add('hidden');
+            } else {
+                drinkOptions.classList.remove('active');
+                noDrinkMsg.classList.remove('hidden');
+                appData.bebida = 'Solo chisme puro, cero alcohol';
+            }
+
+            // Mostramos el botón de Siguiente
+            btnNext.classList.remove('hidden');
+        }
+
+        // Toggle para mostrar/escribir "Otro" input text si cambian el radio
+        document.querySelectorAll('input[name="drink"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const otroInput = document.getElementById('otro-drink');
+                if (e.target.value === 'Otro') {
+                    otroInput.style.display = 'block';
+                    otroInput.focus();
+                } else {
+                    otroInput.style.display = 'none';
+                }
+            });
+        });
+
+        function processDrinkSelection() {
+            const drinkOptions = document.getElementById('drink-options');
+            // Si el usuario dijo que sí (sección activa)
+            if (drinkOptions.classList.contains('active')) {
+                const selected = document.querySelector('input[name="drink"]:checked');
+                if (selected) {
+                    if (selected.value === 'Otro') {
+                        const otroValue = document.getElementById('otro-drink').value;
+                        appData.bebida = otroValue.trim() ? otroValue.trim() : 'Sorpresa misteriosa';
+                    } else {
+                        appData.bebida = selected.value;
+                    }
+                } else {
+                    alert('Por favor selecciona una bebida o elige "Otro" antes de continuar.');
+                    return;
+                }
+            }
+
+            // Preparamos resumen
+            document.getElementById('sum-hora').innerText = appData.hora;
+            document.getElementById('sum-bebida').innerText = appData.bebida;
+
+            goToScreen(6);
+        }
+
+        // --- Integraciones Finales ---
+        function confirmWhatsapp() {
+            const phoneNumber = "+51943774008"; // 
+            const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Salida+con+Wuius&dates=20260312T000000Z/20260312T010000Z&details=Chisme+y+salida`;
+            const msg = `¡Hola Wuius! Confirmo nuestra salida para el 12/03 a las ${appData.hora}. El motivo es chismear y tomaremos ${appData.bebida}. ¡Nos vemos!\n\nTambién te dejo el link para que lo agregues a tu calendario:\n${gcalUrl}`;
+            const encodedMsg = encodeURIComponent(msg);
+            const url = `https://wa.me/${phoneNumber}?text=${encodedMsg}`;
+            window.open(url, '_blank');
+        }
+
+    </script>
+</body>
+
+</html>
